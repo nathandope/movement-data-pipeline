@@ -1,0 +1,17 @@
+{
+    "namespace": "dope.nathan.movement.data.model.track",
+    "type": "record",
+    "name": "TrackPoint",
+    "fields":[
+        {
+            "name": "timestamp",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+
+        },
+        {
+            "name": "geoposition",
+            "type": "dope.nathan.movement.data.model.geoposition.Geoposition"
+        }
+    ]
+}

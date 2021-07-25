@@ -1,0 +1,16 @@
+{
+    "namespace": "dope.nathan.movement.data.model.event",
+    "type": "record",
+    "name": "TrackMade",
+    "fields":[
+        {
+            "name": "track",
+            "type": "dope.nathan.movement.data.model.track.Track"
+        },
+        {
+            "name": "eventTime",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        }
+    ]
+}

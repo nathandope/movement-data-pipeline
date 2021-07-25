@@ -1,0 +1,11 @@
+{
+    "namespace": "dope.nathan.movement.data.model.geoposition",
+    "name": "Direction",
+    "type": "enum",
+    "symbols": [
+        "N", "NNE", "NE", "ENE",
+        "E", "ESE", "SE", "SSE",
+        "S", "SSW", "SW", "WSW",
+        "W", "WNW", "NW", "NNW"
+    ]
+}

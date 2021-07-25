@@ -1,0 +1,16 @@
+{
+    "namespace": "dope.nathan.movement.data.model.event",
+    "type": "record",
+    "name": "SensorDataGot",
+    "fields":[
+        {
+            "name": "sensor",
+            "type": "dope.nathan.movement.data.model.sensor.Sensor"
+        },
+        {
+            "name": "eventTime",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        }
+    ]
+}

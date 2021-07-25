@@ -1,0 +1,41 @@
+{
+    "namespace": "dope.nathan.movement.data.model.track",
+    "type": "record",
+    "name": "Metrics",
+    "fields":[
+        {
+            "name": "startTime",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        },
+        {
+            "name": "endTime",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        },
+        {
+            "name": "duration",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        },
+        {
+            "name": "distance",
+            "type": "double"
+        },
+        {
+            "name": "speed",
+            "type": "double"
+        },
+        {
+            "name": "direction",
+            "type": "dope.nathan.movement.data.model.geoposition.Direction"
+        },
+        {
+            "name": "trackPoints",
+            "type": {
+                "type": "array",
+                "items": "dope.nathan.movement.data.model.track.TrackPoint"
+            }
+        }
+    ]
+}

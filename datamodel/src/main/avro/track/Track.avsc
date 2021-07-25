@@ -1,0 +1,19 @@
+{
+    "namespace": "dope.nathan.movement.data.model.track",
+    "type": "record",
+    "name": "Track",
+    "fields":[
+        {
+            "name": "id",
+            "type": "string"
+        },
+        {
+            "name": "carrier",
+            "type": "string"
+        },
+        {
+            "name": "metrics",
+            "type": "dope.nathan.movement.data.model.track.Metrics"
+        }
+    ]
+}

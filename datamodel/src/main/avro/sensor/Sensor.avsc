@@ -1,0 +1,19 @@
+{
+    "namespace": "dope.nathan.movement.data.model.sensor",
+    "type": "record",
+    "name": "Sensor",
+    "fields":[
+        {
+            "name": "id",
+            "type": "string"
+        },
+        {
+            "name": "carrier",
+            "type": "string"
+        },
+        {
+            "name": "metrics",
+            "type": "dope.nathan.movement.data.model.sensor.Metrics"
+        }
+    ]
+}
