@@ -2,13 +2,13 @@ package dope.nathan.movement.data.converter
 package logic.state
 
 import dope.nathan.movement.data.model.sensor.Sensor
+import org.apache.flink.api.java.functions.KeySelector
 
-object StateKeyMaker {
+case class StateKeyMaker(statePeriod: StatePeriod, stateTimeFrameMarker: StateTimeFrameMarker.type)
+    extends KeySelector[Sensor, String] {
+  override def getKey(value: Sensor): String = {
+    val stateTimeFrame = stateTimeFrameMarker.apply(value.metrics.timestamp, statePeriod)
 
-  def apply(sensor: Sensor, statePeriod: StatePeriod, stateTimeFrameMarker: StateTimeFrameMarker.type): String = {
-    val stateTimeFrame = stateTimeFrameMarker.apply(sensor.metrics.timestamp, statePeriod)
-
-    s"${sensor.id}_${stateTimeFrame.toString}"
+    s"${value.id}_${stateTimeFrame.toString}"
   }
-
 }

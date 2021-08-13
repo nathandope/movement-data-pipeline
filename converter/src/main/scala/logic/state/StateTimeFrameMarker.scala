@@ -3,7 +3,7 @@ package logic.state
 
 import org.joda.time.{ DateTime, Interval }
 
-object StateTimeFrameMarker {
+object StateTimeFrameMarker extends Serializable {
 
   def apply(sensorTimestamp: Long, statePeriod: StatePeriod): Interval = {
     val markTimeBoundaries = statePeriod match {

@@ -4,7 +4,7 @@ package logic.state
 import scala.concurrent.duration.{ FiniteDuration, _ }
 import scala.language.postfixOps
 
-sealed trait StatePeriod { val value: FiniteDuration }
-object StateDay    extends StatePeriod { val value: FiniteDuration = 1 day    }
-object StateHour   extends StatePeriod { val value: FiniteDuration = 1 hour   }
-object StateMinute extends StatePeriod { val value: FiniteDuration = 1 minute }
+sealed trait StatePeriod extends Serializable { val value: FiniteDuration }
+case object StateDay    extends StatePeriod { val value: FiniteDuration = 1 day    }
+case object StateHour   extends StatePeriod { val value: FiniteDuration = 1 hour   }
+case object StateMinute extends StatePeriod { val value: FiniteDuration = 1 minute }

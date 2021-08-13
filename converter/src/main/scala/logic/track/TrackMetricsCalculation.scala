@@ -65,6 +65,7 @@ private[track] trait TrackMetricsCalculation {
       case a if wnwDegrees(a)   => Direction.WNW
       case a if nwDegrees(a)    => Direction.NW
       case a if nnwDegrees(a)   => Direction.NNW
+      case _                    => Direction.Zero
     }
   }
 
