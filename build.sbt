@@ -5,16 +5,16 @@ import Const._
 
 lazy val root = (project in file("."))
   .settings(
-    name := projectName,
-    version := "0.1",
+    name := ProjectName,
+    version := ProjectVersion,
     publish / skip := true,
-    commonSettings
+    Settings.commons
   )
-  .withId(projectName)
+  .withId(ProjectName)
   .aggregate(
     pipeline,
     datamodel,
-    tracker,
+    transceiver,
     converter
   )
 
@@ -22,14 +22,14 @@ lazy val pipeline = appModule(postfix)
   .enablePlugins(CloudflowApplicationPlugin)
   .settings(
     blueprint := Some("blueprint.conf"),
-    runLocalConfigFile := Some(s"$projectResources/local.conf")
+    runLocalConfigFile := Some(s"$ProjectResources/local.conf")
   )
-  .dependsOn(datamodel, tracker, converter)
+  .dependsOn(datamodel, transceiver, converter)
 
 lazy val datamodel = appModule("datamodel")
   .enablePlugins(CloudflowLibraryPlugin)
 
-lazy val tracker = appModule("tracker")
+lazy val transceiver = appModule("transceiver")
   .enablePlugins(CloudflowAkkaPlugin)
   .settings(
     libraryDependencies ++= commons
@@ -44,33 +44,22 @@ lazy val converter = appModule("converter")
   )
   .dependsOn(datamodel)
 
+lazy val collector = appModule("collector")
+  .enablePlugins(CloudflowSparkPlugin)
+  .settings(
+    libraryDependencies ++= commons,
+    Test / parallelExecution := false
+  )
+  .dependsOn(datamodel)
+
 def appModule(moduleID: String): Project = {
   Project(id = moduleID, base = file(moduleID))
     .settings(
       name := moduleID,
-      idePackagePrefix := Some(s"$company.$namePart1.$namePart2.$moduleID"),
-      commonSettings,
-      Compile / resources += file(s"$projectResources/logback.xml"),
+      idePackagePrefix := Some(s"$Company.$namePart1.$namePart2.$moduleID"),
+      Settings.commons,
+      Compile / resources += file(s"$ProjectResources/logback.xml"),
       excludeDependencies += "org.slf4j" % "slf4j-log4j12"
     )
     .withId(moduleID)
 }
-
-lazy val commonSettings = Seq(
-  organization := company,
-  scalaVersion := "2.12.14",
-  scalacOptions ++= Seq(
-    "-encoding",
-    "UTF-8",
-    "-target:jvm-1.8",
-    "-Xlog-reflective-calls",
-    "-Xlint",
-    "-Ywarn-unused",
-    "-Ywarn-unused-import",
-    "-deprecation",
-    "-feature",
-    "-language:_",
-    "-unchecked"
-  ),
-  Test / console / scalacOptions := (Compile / console / scalacOptions).value
-)

@@ -1,7 +1,7 @@
 package dope.nathan.movement.data.converter
 package logic.conversion.management
 
-import logic.conversion.TrackModification
+import logic.conversion.management.StateManagement.TrackModification
 
 import dope.nathan.movement.data.model.track.Track
 import org.apache.flink.api.common.state.ValueState
@@ -9,12 +9,18 @@ import org.apache.flink.api.common.state.ValueState
 trait StateManagement {
 
   protected def updateState(
-    track: Track
+    track: Track,
+    currentTimestamp: Long
   )(implicit state: ValueState[TrackModification]
   ): ValueState[TrackModification] = {
-    val freshTrackMod = TrackModification(track)
+    val freshTrackMod = TrackModification(track, currentTimestamp)
     state.update(freshTrackMod)
+
     state
   }
 
+}
+
+object StateManagement {
+  case class TrackModification(track: Track, lastModified: Long)
 }
