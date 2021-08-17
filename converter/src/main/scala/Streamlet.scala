@@ -1,12 +1,13 @@
 package dope.nathan.movement.data.converter
 
 import logic.conversion.SensorToTrack
-import logic.state.{StateConfig, StateKeyMaker, StateTimeFrameMarker}
+import logic.state.track.TrackTimeBoundariesMarker
+import logic.state.{ StateConfig, StateKeyMaker }
 
-import cloudflow.flink.{FlinkStreamlet, FlinkStreamletLogic}
-import cloudflow.streamlets.avro.{AvroInlet, AvroOutlet}
-import cloudflow.streamlets.{ConfigParameter, StreamletShape}
-import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
+import cloudflow.flink.{ FlinkStreamlet, FlinkStreamletLogic }
+import cloudflow.streamlets.avro.{ AvroInlet, AvroOutlet }
+import cloudflow.streamlets.{ ConfigParameter, StreamletShape }
+import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.TimeCharacteristic
 
@@ -33,8 +34,8 @@ trait ConvertorBase extends ConvertorShape {
         val stateConfig = StateConfig.apply
         val dataStream = readStream(sensorIn)
           .map(event => event.sensor)
-          .keyBy(StateKeyMaker(stateConfig.accumulationPeriod, StateTimeFrameMarker))
-          .process(SensorToTrack(stateConfig.releaseTimeout, stateConfig.stateTimeToLive))
+          .keyBy(StateKeyMaker(TrackTimeBoundariesMarker(stateConfig.trackDurationForState)))
+          .process(SensorToTrack(stateConfig.stateReleaseTimeout, stateConfig.stateTimeToLive))
 
         writeStream(trackOut, dataStream)
       }.left.foreach(log.error("Could not build a graph", _))

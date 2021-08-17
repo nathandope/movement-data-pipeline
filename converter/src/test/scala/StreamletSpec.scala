@@ -14,11 +14,11 @@ import scala.collection.JavaConverters._
 class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with BeforeAndAfter {
   private val env = StreamExecutionEnvironment.getExecutionEnvironment
 
-  override def config: Config = ConfigFactory.parseMap(TestConfig.configMap.asJava)
+  override def config: Config = ConfigFactory.parseMap(Config.configMap.asJava)
 
-  "1" should {
-    "11" in {
-      val inputEventStream = env.addSource(FlinkSource.CollectionSourceFunction(Data.events))
+  "Streamlet" should {
+    "process SensorDataGot events and create TrackMade events" in {
+      val inputEventStream = env.addSource(FlinkSource.CollectionSourceFunction(Data.inputEvents))
 
       val sensorDataGotIn = inletAsTap[SensorDataGot](Convertor.sensorIn, inputEventStream)
       val trackMadeOut = outletAsTap[TrackMade](Convertor.trackOut)
@@ -27,7 +27,7 @@ class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with
 
       val result = TestFlinkStreamletContext.result
 
-      println(result.toArray.mkString(", "))
+      result.size should be(1)
     }
   }
 }

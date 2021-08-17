@@ -1,19 +1,21 @@
 package dope.nathan.movement.data.converter
 package logic.state
 
+import logic.state.track.{ Daily, Hourly, Minutely, TrackDuration }
+
 import cloudflow.streamlets.{ DurationConfigParameter, StreamletContext, StringConfigParameter }
 
 trait StateConfigValidation {
   protected def check(
-    stateAccumulationPeriodParam: StringConfigParameter,
+    stateByTrackDurationParam: StringConfigParameter,
     stateReleaseTimeoutParam: DurationConfigParameter,
     stateTimeToLiveParam: DurationConfigParameter
   )(implicit ctx: StreamletContext
-  ): Either[String, (StatePeriod, Long, Long)] = {
-    statePeriodStringToInstance(stateAccumulationPeriodParam).flatMap { stateAccumulationPeriod =>
-      val releaseStateTimeoutMs     = stateReleaseTimeoutParam.value.toMillis
-      val stateTimeToLiveMs         = stateTimeToLiveParam.value.toMillis
-      val stateAccumulationPeriodMs = stateAccumulationPeriod.value.toMillis
+  ): Either[String, (TrackDuration, Long, Long)] = {
+    statePeriodStringToInstance(stateByTrackDurationParam).flatMap { stateByTrackDuration =>
+      val releaseStateTimeoutMs   = stateReleaseTimeoutParam.value.toMillis
+      val stateTimeToLiveMs       = stateTimeToLiveParam.value.toMillis
+      val trackDurationForStateMs = stateByTrackDuration.value.toMillis
 
       if (0 >= releaseStateTimeoutMs) {
         val errorMsgPart =
@@ -34,35 +36,35 @@ trait StateConfigValidation {
 
         Left(errorMsgPart)
 
-      } else if (stateTimeToLiveMs < stateAccumulationPeriodMs) {
+      } else if (stateTimeToLiveMs < trackDurationForStateMs) {
         val errorMsgPart =
           s"""${stateTimeToLiveParam.key}= $stateTimeToLiveMs ms.
              |${stateTimeToLiveParam.description}
              |or
-             |${stateAccumulationPeriodParam.key}= $stateAccumulationPeriodMs ms.
-             |${stateAccumulationPeriodParam.description}
+             |${stateByTrackDurationParam.key}= $trackDurationForStateMs ms.
+             |${stateByTrackDurationParam.description}
              |""".stripMargin
 
         Left(errorMsgPart)
 
       } else {
-        Right((stateAccumulationPeriod, releaseStateTimeoutMs, stateTimeToLiveMs))
+        Right((stateByTrackDuration, releaseStateTimeoutMs, stateTimeToLiveMs))
       }
     }
   }
 
   private def statePeriodStringToInstance(
-    stateAccumulationPeriodParam: StringConfigParameter
+    stateByTrackDurationParam: StringConfigParameter
   )(implicit ctx: StreamletContext
-  ): Either[String, StatePeriod] = {
-    stateAccumulationPeriodParam.value match {
-      case "minute" => Right(StateMinute)
-      case "hour"   => Right(StateHour)
-      case "day"    => Right(StateDay)
+  ): Either[String, TrackDuration] = {
+    stateByTrackDurationParam.value match {
+      case "minute" => Right(Minutely)
+      case "hour"   => Right(Hourly)
+      case "day"    => Right(Daily)
       case period =>
         val errorMsgPart =
-          s"""${stateAccumulationPeriodParam.key}= $period.
-             |${stateAccumulationPeriodParam.description}
+          s"""${stateByTrackDurationParam.key}= $period.
+             |${stateByTrackDurationParam.description}
              |""".stripMargin
 
         Left(errorMsgPart)

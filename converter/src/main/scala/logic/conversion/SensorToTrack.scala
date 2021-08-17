@@ -37,6 +37,7 @@ case class SensorToTrack(timeout: Long, timeToLive: Long)
     val descriptor = new ValueStateDescriptor("TrackState", classOf[TrackModification])
 
     val ttlConfig = newBuilder(Time.milliseconds(timeToLive))
+      .useProcessingTime()
       .setUpdateType(UpdateType.OnCreateAndWrite)
       .setStateVisibility(StateVisibility.NeverReturnExpired)
       .build
