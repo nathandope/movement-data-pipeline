@@ -28,12 +28,11 @@ trait ConvertorBase extends ConvertorShape {
       import scala.util.control.Exception._
 
       catching(nonFatalCatcher).either {
-        context.env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+        context.env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
 
         val stateConfig = StateConfig.apply
         val dataStream = readStream(sensorIn)
           .map(event => event.sensor)
-          .assignTimestampsAndWatermarks(TimestampExtractor(Time.seconds(5)))
           .keyBy(StateKeyMaker(TrackTimeBoundariesMarker(stateConfig.trackDurationForState)))
           .process(SensorToTrack(stateConfig.stateReleaseTimeout, stateConfig.stateTimeToLive))
 

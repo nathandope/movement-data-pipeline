@@ -7,9 +7,7 @@ import logic.conversion.management.{ StateManagement, TimerManagement }
 import dope.nathan.movement.data.model._
 import dope.nathan.movement.data.model.event.TrackMade
 import dope.nathan.movement.data.model.sensor.Sensor
-import org.apache.flink.api.common.state.StateTtlConfig._
 import org.apache.flink.api.common.state.{ ValueState, ValueStateDescriptor }
-import org.apache.flink.api.common.time.Time
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
 import org.apache.flink.util.Collector
 import org.joda.time.{ DateTime, Instant }
@@ -27,23 +25,13 @@ case class SensorToTrack(timeout: Long, timeToLive: Long)
     with TimerManagement
     with StateProcessLogging {
 
-  import logic.track.TrackSyntax._
-
   import SensorToTrack._
+  import logic.conversion.track.TrackSyntax._
 
   @transient lazy val log: Logger = LoggerFactory.getLogger(getClass.getName)
 
   @transient implicit lazy val state: ValueState[TrackModification] = {
     val descriptor = new ValueStateDescriptor("TrackState", classOf[TrackModification])
-
-    val ttlConfig = newBuilder(Time.milliseconds(timeToLive))
-      .useProcessingTime()
-      .setUpdateType(UpdateType.OnCreateAndWrite)
-      .setStateVisibility(StateVisibility.NeverReturnExpired)
-      .build
-
-    descriptor.enableTimeToLive(ttlConfig)
-
     getRuntimeContext.getState(descriptor)
   }
 
