@@ -10,6 +10,7 @@ import cloudflow.streamlets.{ ConfigParameter, StreamletShape }
 import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.windowing.time.Time
 
 trait ConvertorShape extends FlinkStreamlet {
   @transient val sensorIn: AvroInlet[SensorDataGot] = AvroInlet("sensor-in")
@@ -27,9 +28,7 @@ trait ConvertorBase extends ConvertorShape {
       import scala.util.control.Exception._
 
       catching(nonFatalCatcher).either {
-        context.env.setStreamTimeCharacteristic(
-          TimeCharacteristic.IngestionTime
-        )
+        context.env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
 
         val stateConfig = StateConfig.apply
         val dataStream = readStream(sensorIn)

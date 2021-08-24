@@ -1,8 +1,8 @@
 package dope.nathan.movement.data.converter
-package logic.track
+package logic.conversion.track
 
-import dope.nathan.movement.data.model.sensor.{Sensor, Metrics => SensorMetrics}
-import dope.nathan.movement.data.model.track.{Track, TrackPoint, Metrics => TrackMetrics}
+import dope.nathan.movement.data.model.sensor.{ Sensor, Metrics => SensorMetrics }
+import dope.nathan.movement.data.model.track.{ Track, TrackPoint, Metrics => TrackMetrics }
 
 object TrackSyntax {
 

@@ -1,5 +1,5 @@
 package dope.nathan.movement.data.converter
-package logic.track
+package logic.conversion.track
 
 import dope.nathan.movement.data.model.track.TrackPoint
 
