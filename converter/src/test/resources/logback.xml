@@ -26,7 +26,7 @@
     <logger name="localRunner" level="debug"/>
     <logger name="org.apache.flink.runtime.highavailability.nonha.embedded" level="error"/>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

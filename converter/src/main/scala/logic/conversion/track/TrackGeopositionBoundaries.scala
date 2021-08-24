@@ -1,12 +1,12 @@
 package dope.nathan.movement.data.converter
-package logic.track
+package logic.conversion.track
 
 import dope.nathan.movement.data.model.track.TrackPoint
 
-case class TrackBoundaries(firstTrackPoint: TrackPoint, lastTrackPoint: TrackPoint)
+case class TrackGeopositionBoundaries(firstTrackPoint: TrackPoint, lastTrackPoint: TrackPoint)
 
-object TrackBoundaries {
-  def safelyApply(trackId: String, trackPoints: Seq[TrackPoint]): Either[String, TrackBoundaries] = {
+object TrackGeopositionBoundaries {
+  def safelyApply(trackId: String, trackPoints: Seq[TrackPoint]): Either[String, TrackGeopositionBoundaries] = {
     trackPoints match {
       case Nil =>
         val errorMsg = s"Track with $trackId does not contain the points!"
@@ -15,7 +15,7 @@ object TrackBoundaries {
       case points =>
         Right {
           val sortedTrackPoints = points.sortBy(_.timestamp)
-          TrackBoundaries(sortedTrackPoints.head, sortedTrackPoints.last)
+          TrackGeopositionBoundaries(sortedTrackPoints.head, sortedTrackPoints.last)
         }
     }
   }

@@ -1,13 +1,16 @@
 package dope.nathan.movement.data.converter
 
-import logic.state.{StateConfig, StateKeyMaker, StateTimeFrameMarker}
 import logic.conversion.SensorToTrack
+import logic.state.track.TrackTimeBoundariesMarker
+import logic.state.{ StateConfig, StateKeyMaker }
 
-import cloudflow.flink.{FlinkStreamlet, FlinkStreamletLogic}
-import cloudflow.streamlets.avro.{AvroInlet, AvroOutlet}
-import cloudflow.streamlets.{ConfigParameter, StreamletShape}
-import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
+import cloudflow.flink.{ FlinkStreamlet, FlinkStreamletLogic }
+import cloudflow.streamlets.avro.{ AvroInlet, AvroOutlet }
+import cloudflow.streamlets.{ ConfigParameter, StreamletShape }
+import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
 import org.apache.flink.api.scala.createTypeInformation
+import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.windowing.time.Time
 
 trait ConvertorShape extends FlinkStreamlet {
   @transient val sensorIn: AvroInlet[SensorDataGot] = AvroInlet("sensor-in")
@@ -23,15 +26,18 @@ trait ConvertorBase extends ConvertorShape {
   override protected def createLogic(): FlinkStreamletLogic = new FlinkStreamletLogic {
     override def buildExecutionGraph(): Unit = {
       import scala.util.control.Exception._
+
       catching(nonFatalCatcher).either {
+        context.env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
+
         val stateConfig = StateConfig.apply
         val dataStream = readStream(sensorIn)
-          .map(_.sensor)
-          .keyBy(sensor => StateKeyMaker(sensor, stateConfig.accumulationPeriod, StateTimeFrameMarker))
-          .process(SensorToTrack(stateConfig.releaseTimeout, stateConfig.stateTimeToLive))
+          .map(event => event.sensor)
+          .keyBy(StateKeyMaker(TrackTimeBoundariesMarker(stateConfig.trackDurationForState)))
+          .process(SensorToTrack(stateConfig.stateReleaseTimeout, stateConfig.stateTimeToLive))
 
         writeStream(trackOut, dataStream)
-      }.left
+      }.left.foreach(log.error("Could not build a graph", _))
     }
   }
 }

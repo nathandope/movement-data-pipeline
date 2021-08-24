@@ -1,5 +1,5 @@
 package dope.nathan.movement.data.converter
-package logic.track
+package logic.conversion.track
 
 import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
 import dope.nathan.movement.data.model.track.TrackPoint
@@ -31,15 +31,15 @@ private[track] trait TrackMetricsCalculation {
   }
 
   protected def calculateDistance(firstLat: FirstLat, lastLat: LastLat, theta: Theta): Double = {
-    val ordinateCoord = sqrt(
+    val ordinateCoordinates = sqrt(
       pow(firstLat.cos * theta.sin, 2) +
         pow((firstLat.cos * lastLat.sin) - (firstLat.sin * lastLat.cos * theta.cos), 2)
     )
-    val abscissaCoord = firstLat.sin * lastLat.sin + firstLat.cos * lastLat.cos * theta.cos;
+    val abscissaCoordinates = firstLat.sin * lastLat.sin + firstLat.cos * lastLat.cos * theta.cos
 
-    val polarCoord = atan2(ordinateCoord, abscissaCoord);
+    val polarCoordinates = atan2(ordinateCoordinates, abscissaCoordinates)
 
-    polarCoord * EarthRadius;
+    polarCoordinates * EarthRadius
   }
 
   protected def calculateSpeed(distance: Double, duration: Long): Double = distance / duration
@@ -65,6 +65,7 @@ private[track] trait TrackMetricsCalculation {
       case a if wnwDegrees(a)   => Direction.WNW
       case a if nwDegrees(a)    => Direction.NW
       case a if nnwDegrees(a)   => Direction.NNW
+      case _                    => Direction.Zero
     }
   }
 

@@ -1,5 +1,5 @@
 package dope.nathan.movement.data.converter
-package logic.track
+package logic.conversion.track
 
 import dope.nathan.movement.data.model.sensor.{ Sensor, Metrics => SensorMetrics }
 import dope.nathan.movement.data.model.track.{ Track, TrackPoint, Metrics => TrackMetrics }
@@ -17,7 +17,7 @@ object TrackSyntax {
     }
 
     def safelyCompleteCalculation: Either[String, Track] = {
-      val errorOrBoundaries = TrackBoundaries.safelyApply(track.id, track.metrics.trackPoints)
+      val errorOrBoundaries = TrackGeopositionBoundaries.safelyApply(track.id, track.metrics.trackPoints)
 
       errorOrBoundaries.flatMap { boundaryPoints =>
         val metrics = calculateMetrics(boundaryPoints)
@@ -25,7 +25,7 @@ object TrackSyntax {
       }
     }
 
-    private def calculateMetrics(trackBoundaries: TrackBoundaries): TrackMetrics = {
+    private def calculateMetrics(trackBoundaries: TrackGeopositionBoundaries): TrackMetrics = {
       val (firstLatSinCos, lastLatSinCos, thetaSinCos) = calculateSinCos(
         trackBoundaries.firstTrackPoint,
         trackBoundaries.lastTrackPoint
