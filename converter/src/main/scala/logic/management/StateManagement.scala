@@ -1,7 +1,7 @@
 package dope.nathan.movement.data.converter
-package logic.conversion.management
+package logic.management
 
-import logic.conversion.management.StateManagement.TrackModification
+import logic.management.StateManagement.TrackModification
 
 import dope.nathan.movement.data.model.track.Track
 import org.apache.flink.api.common.state.ValueState

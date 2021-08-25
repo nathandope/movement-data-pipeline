@@ -1,17 +1,17 @@
 package dope.nathan.movement.data.converter
 package logic.conversion
 
-import logic.conversion.management.StateManagement.TrackModification
-import logic.conversion.management.{ StateManagement, TimerManagement }
+import dope.nathan.movement.data.converter.logic.management.StateManagement.TrackModification
+import dope.nathan.movement.data.converter.logic.management.{LoggingManagement, StateManagement, TimerManagement}
 
 import dope.nathan.movement.data.model._
 import dope.nathan.movement.data.model.event.TrackMade
 import dope.nathan.movement.data.model.sensor.Sensor
-import org.apache.flink.api.common.state.{ ValueState, ValueStateDescriptor }
+import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
 import org.apache.flink.util.Collector
-import org.joda.time.{ DateTime, Instant }
-import org.slf4j.{ Logger, LoggerFactory }
+import org.joda.time.{DateTime, Instant}
+import org.slf4j.{Logger, LoggerFactory}
 
 object SensorToTrack {
   type Function           = KeyedProcessFunction[String, Sensor, TrackMade]
@@ -23,10 +23,10 @@ case class SensorToTrack(timeout: Long, timeToLive: Long)
     extends KeyedProcessFunction[String, Sensor, TrackMade]
     with StateManagement
     with TimerManagement
-    with StateProcessLogging {
+    with LoggingManagement {
 
   import SensorToTrack._
-  import logic.conversion.track.TrackSyntax._
+  import dope.nathan.movement.data.converter.logic.enrichment.track.TrackEnrichment._
 
   @transient lazy val log: Logger = LoggerFactory.getLogger(getClass.getName)
 

@@ -1,6 +1,5 @@
 package dope.nathan.movement.data.converter
 package logic.conversion
-import logic.state.StateKeyMaker
 import logic.state.track.{Minutely, TrackTimeBoundariesMarker}
 
 import dope.nathan.movement.data.model.event.TrackMade

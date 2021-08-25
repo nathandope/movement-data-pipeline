@@ -1,5 +1,5 @@
 package dope.nathan.movement.data.converter
-package logic.conversion.track
+package logic.enrichment.track
 
 import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
 import dope.nathan.movement.data.model.track.TrackPoint

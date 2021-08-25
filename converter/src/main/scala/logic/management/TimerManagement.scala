@@ -1,5 +1,5 @@
 package dope.nathan.movement.data.converter
-package logic.conversion.management
+package logic.management
 
 import logic.conversion.SensorToTrack.FuncContext
 

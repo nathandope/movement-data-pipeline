@@ -1,10 +1,10 @@
 package dope.nathan.movement.data.converter
-package logic.conversion
+package logic.management
 
 import org.apache.flink.api.common.state.ValueState
 import org.joda.time.DateTime
 
-trait StateProcessLogging {
+trait LoggingManagement {
 
   protected def logStartProcessMsg[K](
     processName: String,

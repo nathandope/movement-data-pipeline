@@ -20,10 +20,10 @@ class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with
     "process SensorDataGot events and create TrackMade events" in {
       val inputEventStream = env.addSource(FlinkSource.CollectionSourceFunction(Data.inputEvents))
 
-      val sensorDataGotIn = inletAsTap[SensorDataGot](Convertor.sensorIn, inputEventStream)
-      val trackMadeOut = outletAsTap[TrackMade](Convertor.trackOut)
+      val sensorDataGotIn = inletAsTap[SensorDataGot](Converter.sensorDataGotIn, inputEventStream)
+      val trackMadeOut = outletAsTap[TrackMade](Converter.trackMadeOut)
 
-      run(Convertor, Seq(sensorDataGotIn), Seq(trackMadeOut), env)
+      run(Converter, Seq(sensorDataGotIn), Seq(trackMadeOut), env)
 
       val result = TestFlinkStreamletContext.result
 
