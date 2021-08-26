@@ -1,8 +1,8 @@
-package dope.nathan.movement.data.tracker
+package dope.nathan.movement.data.transceiver
 package json
 
+import dope.nathan.movement.data.model.Sensor
 import dope.nathan.movement.data.model.event.SensorDataGot
-import dope.nathan.movement.data.model.sensor.Sensor
 import spray.json._
 
 object SensorDataGotJsonProtocol extends DefaultJsonProtocol {

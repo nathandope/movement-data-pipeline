@@ -1,13 +1,13 @@
-package dope.nathan.movement.data.tracker
+package dope.nathan.movement.data.transceiver
 package json
 
-import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction, Geoposition }
+import dope.nathan.movement.data.model.Geoposition
+import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
 import spray.json.{ enrichAny, DeserializationException, JsObject, JsValue, RootJsonFormat }
 
 object GeopositionJsonProtocol {
-  import DirectionJsonProtocol.DirectionJsonFormat
-
   import CoordinatesJsonProtocol.CoordinatesJsonFormat
+  import DirectionJsonProtocol.DirectionJsonFormat
 
   implicit object GeopositionJsonFormat extends RootJsonFormat[Geoposition] {
 

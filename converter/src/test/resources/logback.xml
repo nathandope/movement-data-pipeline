@@ -7,24 +7,9 @@
         </encoder>
     </appender>
 
-    <logger name="akka" level="error"/>
-    <logger name="akka.actor.ActorSystemImpl" level="error"/>
-    <logger name="org.apache.kafka" level="error"/>
-    <logger name="org.apache.kafka.common.utils.AppInfoParser" level="error"/>
-    <logger name="org.apache.kafka.clients.NetworkClient" level="error"/>
-    <logger name="kafka" level="error"/>
-    <logger name="org.apache.zookeeper" level="error"/>
     <logger name="org.apache.flink" level="error"/>
-    <logger name="org.apache.flink.streaming.api.functions.sink.TwoPhaseCommitSinkFunction" level="error"/>
-    <logger name="org.apache.flink.runtime.checkpoint.CheckpointCoordinator" level="error"/>
-    <logger name="org.apache.flink.runtime.executiongraph" level="error"/>
-    <logger name="org.apache.hadoop" level="error"/>
-    <logger name="org.apache.spark" level="error"/>
-    <logger name="com.amazonaws.latency" level="error"/>
-
     <logger name="dope.nathan" level="debug"/>
     <logger name="localRunner" level="debug"/>
-    <logger name="org.apache.flink.runtime.highavailability.nonha.embedded" level="error"/>
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>

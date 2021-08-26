@@ -1,13 +1,13 @@
 package dope.nathan.movement.data.converter
-package logic.enrichment.track
+package logic.enrichment.metrics
 
 import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
 import dope.nathan.movement.data.model.track.TrackPoint
 
 import scala.math._
 
-private[track] trait TrackMetricsCalculation {
-  import TrackMetricsCalculation._
+private[metrics] trait MetricsCalculation {
+  import MetricsCalculation._
 
   protected def calculateTimeFrame(firstTrackPoint: TrackPoint, lastTrackPoint: TrackPoint): (Long, Long) =
     (firstTrackPoint.timestamp, lastTrackPoint.timestamp)
@@ -85,7 +85,8 @@ private[track] trait TrackMetricsCalculation {
   }
 }
 
-private[track] object TrackMetricsCalculation {
+private[metrics] object MetricsCalculation {
+
   sealed trait SinCos { val sin, cos: Double }
   case class FirstLat(sin: Double, cos: Double) extends SinCos
   case class LastLat(sin: Double, cos: Double)  extends SinCos

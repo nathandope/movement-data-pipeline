@@ -1,5 +1,5 @@
 {
-    "namespace": "dope.nathan.movement.data.model.track",
+    "namespace": "dope.nathan.movement.data.model",
     "type": "record",
     "name": "Track",
     "fields":[
