@@ -1,5 +1,5 @@
 {
-    "namespace": "dope.nathan.movement.data.model.geoposition",
+    "namespace": "dope.nathan.movement.data.model",
     "type": "record",
     "name": "Geoposition",
     "fields":[

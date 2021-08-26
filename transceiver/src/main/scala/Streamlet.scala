@@ -1,4 +1,4 @@
-package dope.nathan.movement.data.tracker
+package dope.nathan.movement.data.transceiver
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import cloudflow.akkastream.util.scaladsl.HttpServerLogic

@@ -1,6 +1,6 @@
-import sbt._
-import sbt.Keys._
 import Dependency._
+import sbt.Keys._
+import sbt._
 import Const._
 
 lazy val root = (project in file("."))
@@ -32,7 +32,8 @@ lazy val datamodel = appModule("datamodel")
 lazy val transceiver = appModule("transceiver")
   .enablePlugins(CloudflowAkkaPlugin)
   .settings(
-    libraryDependencies ++= commons
+    libraryDependencies ++= commons :+ AkkaTestKit ,
+    Test / parallelExecution := false
   )
   .dependsOn(datamodel)
 

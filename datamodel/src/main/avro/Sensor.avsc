@@ -1,5 +1,5 @@
 {
-    "namespace": "dope.nathan.movement.data.model.sensor",
+    "namespace": "dope.nathan.movement.data.model",
     "type": "record",
     "name": "Sensor",
     "fields":[
