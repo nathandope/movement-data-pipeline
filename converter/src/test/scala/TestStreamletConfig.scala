@@ -1,8 +1,9 @@
 package dope.nathan.movement.data.converter
 
+import logic.config.EnvironmentConfig.autoWatermarkIntervalParameter
 import logic.config.WindowConfig._
 
-object Config {
+object TestStreamletConfig {
 
   private val prefixConfigPath = "cloudflow.streamlets.testFlinkStreamlet"
 

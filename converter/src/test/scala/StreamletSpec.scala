@@ -1,9 +1,8 @@
 package dope.nathan.movement.data.converter
 
-import logic.Logging
-
 import cloudflow.flink.testkit.{FlinkSource, FlinkTestkit, TestFlinkStreamletContext}
 import com.typesafe.config.{Config, ConfigFactory}
+import dope.nathan.movement.data.common.auxiliary.BaseLogging
 import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
@@ -13,14 +12,16 @@ import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.collection.JavaConverters._
 
-class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with BeforeAndAfter with Logging {
-  private val env = StreamExecutionEnvironment.getExecutionEnvironment
+class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with BeforeAndAfter with BaseLogging {
 
-  override def config: Config = ConfigFactory.parseMap(Config.configMap.asJava)
-  println()
+  private val env      = StreamExecutionEnvironment.getExecutionEnvironment
+  private val testData = new TestData
+
+  override def config: Config = ConfigFactory.parseMap(TestStreamletConfig.configMap.asJava)
+
   "Streamlet" should {
     "process SensorDataGot events and create TrackMade events" in {
-      val inputEventStream = env.addSource(FlinkSource.CollectionSourceFunction(Data.inputEvents))
+      val inputEventStream = env.addSource(FlinkSource.CollectionSourceFunction(testData.inputEvents))
 
       val sensorDataGotIn = inletAsTap[SensorDataGot](Converter.sensorDataGotIn, inputEventStream)
       val trackMadeOut    = outletAsTap[TrackMade](Converter.trackMadeOut)
@@ -29,7 +30,7 @@ class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with
 
       val result = TestFlinkStreamletContext.result
 
-      result.asScala.foreach(log.debug)
+      result.asScala.foreach(logger.debug)
 
       result.size should be(4)
     }

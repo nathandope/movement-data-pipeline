@@ -1,18 +1,19 @@
 package dope.nathan.movement.data.converter
 
 import dope.nathan.movement.data.model.event.SensorDataGot
-import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
+import dope.nathan.movement.data.model.geoposition.{Coordinates, Direction}
 import dope.nathan.movement.data.model.sensor.Metrics
-import dope.nathan.movement.data.model.{ Geoposition, Sensor }
+import dope.nathan.movement.data.model.{Geoposition, Sensor}
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{ DateTime, Instant }
+import org.joda.time.{DateTime, Instant}
 
-object Data {
+class TestData {
+  import TestData._
 
-  private val fillASensor = createSensor("IDA", "Choppy") _
-  private val fillBSensor = createSensor("IDB", "Hugger") _
+  private val fillASensor = createSensor("ID-A", "Choppy") _
+  private val fillBSensor = createSensor("ID-B", "Hugger") _
 
-  private val rawASensorTrack = Seq(
+  private val rawASensorData = Seq(
     fillASensor("2021-09-01T00:01:00.000Z", 64.155146, 115.917658, Direction.N),
     fillASensor("2021-09-01T00:01:05.000Z", 64.167866, 115.916566, Direction.N),
     fillASensor("2021-09-01T00:01:10.000Z", 64.174548, 115.915173, Direction.N),
@@ -32,10 +33,10 @@ object Data {
     fillASensor("2021-09-01T00:02:20.000Z", 64.203855, 115.828833, Direction.NW),
     fillASensor("2021-09-01T00:02:25.000Z", 64.203855, 115.828833, Direction.NW),
     fillASensor("2021-09-01T00:02:30.000Z", 64.203855, 115.828833, Direction.NW),
-    fillASensor("2021-09-01T00:02:35.000Z", 64.203855, 115.828833, Direction.NW)
+    fillASensor("2021-09-01T00:02:35.000Z", 64.203855, 115.828833, Direction.S)
   )
 
-  private val rawBSensorTrack = Seq(
+  private val rawBSensorData = Seq(
     fillBSensor("2021-09-01T00:01:01.000Z", 64.155146, 115.917658, Direction.N),
     fillBSensor("2021-09-01T00:01:06.000Z", 64.167866, 115.916566, Direction.N),
     fillBSensor("2021-09-01T00:01:11.000Z", 64.174548, 115.915173, Direction.N),
@@ -51,19 +52,21 @@ object Data {
     fillBSensor("2021-09-01T00:02:01.000Z", 64.203855, 115.828833, Direction.NW),
     fillBSensor("2021-09-01T00:02:06.000Z", 64.203855, 115.828833, Direction.NW),
     fillBSensor("2021-09-01T00:02:11.000Z", 64.203855, 115.828833, Direction.NW),
-    fillBSensor("2021-09-01T00:02:16.000Z", 64.203855, 115.828833, Direction.NW),
-    fillBSensor("2021-09-01T00:02:21.000Z", 64.203855, 115.828833, Direction.NW),
-    fillBSensor("2021-09-01T00:02:26.000Z", 64.203855, 115.828833, Direction.NW),
-    fillBSensor("2021-09-01T00:02:31.000Z", 64.203855, 115.828833, Direction.NW),
-    fillBSensor("2021-09-01T00:02:36.000Z", 64.203855, 115.828833, Direction.NW)
+    fillBSensor("2021-09-01T00:02:16.000Z", 64.203855, 115.828833, Direction.W),
+    fillBSensor("2021-09-01T00:02:21.000Z", 64.203855, 115.828833, Direction.W),
+    fillBSensor("2021-09-01T00:02:26.000Z", 64.203855, 115.828833, Direction.W),
+    fillBSensor("2021-09-01T00:02:31.000Z", 64.203855, 115.828833, Direction.W),
+    fillBSensor("2021-09-01T00:02:36.000Z", 64.203855, 115.828833, Direction.W)
   )
 
-  val rawSensorsTrack: Seq[Sensor] = rawASensorTrack ++ rawBSensorTrack
+  private val rawAllSensorsData = rawASensorData ++ rawBSensorData
 
-  val inputEvents: Seq[SensorDataGot] =
-    rawSensorsTrack
-      .map(SensorDataGot(_, Instant.now.getMillis))
+  val inputEvents: Seq[SensorDataGot] = rawAllSensorsData
+    .map(SensorDataGot(_, Instant.now.getMillis))
 
+}
+
+object TestData {
   private def createSensor(
     sensorId: String,
     carrier: String
@@ -80,5 +83,4 @@ object Data {
 
     Sensor(sensorId, carrier, metrics)
   }
-
 }
