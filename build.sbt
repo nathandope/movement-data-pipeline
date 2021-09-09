@@ -1,30 +1,38 @@
-import sbt._
-import sbt.Keys._
 import Dependency._
-import Const._
+import ProjectConst._
+import sbt.Keys._
+import sbt._
 
 lazy val root = (project in file("."))
   .settings(
     name := ProjectName,
     version := ProjectVersion,
     publish / skip := true,
-    Settings.commons
+    CustomSettings.commons
   )
   .withId(ProjectName)
   .aggregate(
     pipeline,
     datamodel,
     transceiver,
-    converter
+    converter,
+    collector
   )
 
 lazy val pipeline = appModule(postfix)
   .enablePlugins(CloudflowApplicationPlugin)
   .settings(
     blueprint := Some("blueprint.conf"),
-    runLocalConfigFile := Some(s"$ProjectResources/local.conf")
+    runLocalConfigFile := Some(s"$ProjectResources/sandbox/local.conf"),
+    runLocalLog4jConfigFile := Some(s"$ProjectResources/sandbox/log4j.properties")
   )
-  .dependsOn(datamodel, transceiver, converter)
+  .dependsOn(datamodel, transceiver, converter, collector)
+
+lazy val common = appModule("common")
+  .settings(
+    libraryDependencies += Logback,
+    Test / parallelExecution := false
+  )
 
 lazy val datamodel = appModule("datamodel")
   .enablePlugins(CloudflowLibraryPlugin)
@@ -32,7 +40,8 @@ lazy val datamodel = appModule("datamodel")
 lazy val transceiver = appModule("transceiver")
   .enablePlugins(CloudflowAkkaPlugin)
   .settings(
-    libraryDependencies ++= commons
+    libraryDependencies ++= commons,
+    Test / parallelExecution := false
   )
   .dependsOn(datamodel)
 
@@ -42,24 +51,22 @@ lazy val converter = appModule("converter")
     libraryDependencies ++= commons ++ flinkTestKit,
     Test / parallelExecution := false
   )
-  .dependsOn(datamodel)
+  .dependsOn(datamodel, common)
 
 lazy val collector = appModule("collector")
   .enablePlugins(CloudflowSparkPlugin)
   .settings(
-    libraryDependencies ++= commons,
+    libraryDependencies ++= (commons :+ AkkaSlf4j),
     Test / parallelExecution := false
   )
-  .dependsOn(datamodel)
+  .dependsOn(datamodel, common)
 
 def appModule(moduleID: String): Project = {
   Project(id = moduleID, base = file(moduleID))
     .settings(
       name := moduleID,
       idePackagePrefix := Some(s"$Company.$namePart1.$namePart2.$moduleID"),
-      Settings.commons,
-      Compile / resources += file(s"$ProjectResources/logback.xml"),
-      excludeDependencies += "org.slf4j" % "slf4j-log4j12"
+      CustomSettings.commons
     )
     .withId(moduleID)
 }

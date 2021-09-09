@@ -1,8 +1,8 @@
-package dope.nathan.movement.data.tracker
+package dope.nathan.movement.data.transceiver
 package json
 
 import dope.nathan.movement.data.model.geoposition.Coordinates
-import spray.json.{ DeserializationException, JsNumber, JsObject, JsValue, RootJsonFormat }
+import spray.json.{DeserializationException, JsNumber, JsObject, JsValue, RootJsonFormat}
 
 object CoordinatesJsonProtocol {
   implicit object CoordinatesJsonFormat extends RootJsonFormat[Coordinates] {

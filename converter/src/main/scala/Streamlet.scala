@@ -1,45 +1,30 @@
 package dope.nathan.movement.data.converter
 
-import logic.conversion.SensorToTrack
-import logic.state.track.TrackTimeBoundariesMarker
-import logic.state.{ StateConfig, StateKeyMaker }
+import logic.ConverterLogic
+import logic.config.FlinkConfig
 
-import cloudflow.flink.{ FlinkStreamlet, FlinkStreamletLogic }
-import cloudflow.streamlets.avro.{ AvroInlet, AvroOutlet }
-import cloudflow.streamlets.{ ConfigParameter, StreamletShape }
-import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
-import org.apache.flink.api.scala.createTypeInformation
-import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.windowing.time.Time
+import cloudflow.flink.{FlinkStreamlet, FlinkStreamletLogic}
+import cloudflow.streamlets.avro.{AvroInlet, AvroOutlet}
+import cloudflow.streamlets.{ConfigParameter, StreamletShape}
+import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
 
-trait ConvertorShape extends FlinkStreamlet {
-  @transient val sensorIn: AvroInlet[SensorDataGot] = AvroInlet("sensor-in")
-  @transient val trackOut: AvroOutlet[TrackMade]    = AvroOutlet("track-out")
+trait ConverterShape extends FlinkStreamlet {
+  @transient val sensorDataGotIn: AvroInlet[SensorDataGot] =
+    AvroInlet("sensor-data-got-in")
 
-  override def shape(): StreamletShape = StreamletShape(sensorIn).withOutlets(trackOut)
+  @transient val trackMadeOut: AvroOutlet[TrackMade] =
+    AvroOutlet("track-made-out")
+
+  override def shape(): StreamletShape =
+    StreamletShape(sensorDataGotIn).withOutlets(trackMadeOut)
 }
 
-trait ConvertorBase extends ConvertorShape {
+trait ConverterBase extends ConverterShape {
+  override def configParameters: Vector[ConfigParameter] =
+    FlinkConfig.allParameters
 
-  override def configParameters: Vector[ConfigParameter] = StateConfig.allParameters
-
-  override protected def createLogic(): FlinkStreamletLogic = new FlinkStreamletLogic {
-    override def buildExecutionGraph(): Unit = {
-      import scala.util.control.Exception._
-
-      catching(nonFatalCatcher).either {
-        context.env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
-
-        val stateConfig = StateConfig.apply
-        val dataStream = readStream(sensorIn)
-          .map(event => event.sensor)
-          .keyBy(StateKeyMaker(TrackTimeBoundariesMarker(stateConfig.trackDurationForState)))
-          .process(SensorToTrack(stateConfig.stateReleaseTimeout, stateConfig.stateTimeToLive))
-
-        writeStream(trackOut, dataStream)
-      }.left.foreach(log.error("Could not build a graph", _))
-    }
-  }
+  override protected def createLogic(): FlinkStreamletLogic =
+    ConverterLogic(FlinkConfig.apply, sensorDataGotIn, trackMadeOut)
 }
 
-object Convertor extends ConvertorBase with ConvertorShape
+object Converter extends ConverterBase

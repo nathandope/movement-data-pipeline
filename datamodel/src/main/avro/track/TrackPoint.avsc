@@ -11,7 +11,7 @@
         },
         {
             "name": "geoposition",
-            "type": "dope.nathan.movement.data.model.geoposition.Geoposition"
+            "type": "dope.nathan.movement.data.model.Geoposition"
         }
     ]
 }

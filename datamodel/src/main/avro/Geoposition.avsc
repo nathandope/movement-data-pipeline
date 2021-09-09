@@ -1,0 +1,15 @@
+{
+    "namespace": "dope.nathan.movement.data.model",
+    "type": "record",
+    "name": "Geoposition",
+    "fields":[
+        {
+            "name": "coordinates",
+            "type": "dope.nathan.movement.data.model.geoposition.Coordinates"
+        },
+        {
+            "name": "direction",
+            "type": "dope.nathan.movement.data.model.geoposition.Direction"
+        }
+    ]
+}

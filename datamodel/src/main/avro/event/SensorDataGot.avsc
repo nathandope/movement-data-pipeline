@@ -5,7 +5,7 @@
     "fields":[
         {
             "name": "sensor",
-            "type": "dope.nathan.movement.data.model.sensor.Sensor"
+            "type": "dope.nathan.movement.data.model.Sensor"
         },
         {
             "name": "eventTime",

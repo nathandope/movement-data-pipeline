@@ -5,7 +5,7 @@
     "fields":[
         {
             "name": "track",
-            "type": "dope.nathan.movement.data.model.track.Track"
+            "type": "dope.nathan.movement.data.model.Track"
         },
         {
             "name": "eventTime",
