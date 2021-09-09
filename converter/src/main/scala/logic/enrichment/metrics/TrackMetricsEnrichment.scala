@@ -8,14 +8,14 @@ import dope.nathan.movement.data.model.track.Metrics
 object TrackMetricsEnrichment {
   implicit class TrackMetricsSyntax(metrics: Metrics.type) extends MetricsCalculation {
     def apply(trackLayout: TrackLayout): Metrics = {
-      val (firstLatSinCos, lastLatSinCos, thetaSinCos) =
-        calculateSinCos(trackLayout.firstTrackPoint, trackLayout.lastTrackPoint)
+      import trackLayout._
 
-      val (startTime, endTime) = calculateTimeFrame(trackLayout.firstTrackPoint, trackLayout.lastTrackPoint)
-      val duration             = calculateDuration(trackLayout.firstTrackPoint, trackLayout.lastTrackPoint)
-      val distance             = calculateDistance(firstLatSinCos, lastLatSinCos, thetaSinCos)
+      val trackTrigonometry    = calculateTrackTrigonometry(firstTrackPoint, lastTrackPoint)
+      val (startTime, endTime) = calculateTimeFrame(firstTrackPoint, lastTrackPoint)
+      val duration             = calculateDuration(firstTrackPoint, lastTrackPoint)
+      val distance             = calculateDistance(trackTrigonometry)
       val speed                = calculateSpeed(distance, duration)
-      val direction            = calculateDirection(firstLatSinCos, lastLatSinCos, thetaSinCos)
+      val direction            = calculateDirection(firstTrackPoint, lastTrackPoint, trackTrigonometry)
 
       metrics.apply(
         startTime,
@@ -24,7 +24,7 @@ object TrackMetricsEnrichment {
         distance,
         speed,
         direction,
-        trackLayout.allTrackPoints
+        allTrackPoints
       )
     }
   }

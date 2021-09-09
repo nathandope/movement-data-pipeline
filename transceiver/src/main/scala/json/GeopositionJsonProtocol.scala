@@ -2,8 +2,8 @@ package dope.nathan.movement.data.transceiver
 package json
 
 import dope.nathan.movement.data.model.Geoposition
-import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
-import spray.json.{ enrichAny, DeserializationException, JsObject, JsValue, RootJsonFormat }
+import dope.nathan.movement.data.model.geoposition.{Coordinates, Direction}
+import spray.json.{DeserializationException, JsObject, JsValue, RootJsonFormat, enrichAny}
 
 object GeopositionJsonProtocol {
   import CoordinatesJsonProtocol.CoordinatesJsonFormat

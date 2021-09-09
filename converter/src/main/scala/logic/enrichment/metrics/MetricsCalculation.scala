@@ -1,7 +1,7 @@
 package dope.nathan.movement.data.converter
 package logic.enrichment.metrics
 
-import dope.nathan.movement.data.model.geoposition.{ Coordinates, Direction }
+import dope.nathan.movement.data.model.geoposition.{Coordinates, Direction}
 import dope.nathan.movement.data.model.track.TrackPoint
 
 import scala.math._
@@ -15,27 +15,58 @@ private[metrics] trait MetricsCalculation {
   protected def calculateDuration(firstTrackPoint: TrackPoint, lastTrackPoint: TrackPoint): Long =
     lastTrackPoint.timestamp - firstTrackPoint.timestamp
 
-  protected def calculateSinCos(firstTrackPoint: TrackPoint, lastTrackPoint: TrackPoint): (FirstLat, LastLat, Theta) = {
-    val firstCoords = firstTrackPoint.geoposition.coordinates
-    val lastCoords  = lastTrackPoint.geoposition.coordinates
+  protected def calculateTrackTrigonometry(
+    headTrackPoint: TrackPoint,
+    lastTrackPoint: TrackPoint
+  ): TrackTrigonometry = {
+    val headPointCoordinates = headTrackPoint.geoposition.coordinates
+    val lastPointCoordinates = lastTrackPoint.geoposition.coordinates
 
-    val firstRadians = Coordinates(toRadians(firstCoords.lat), toRadians(firstCoords.lon))
-    val lastRadians  = Coordinates(toRadians(lastCoords.lat), toRadians(lastCoords.lon))
-    val theta        = lastRadians.lon - firstRadians.lon
+    val headPointCoordinatesInRadians = Coordinates(
+      toRadians(headPointCoordinates.lat),
+      toRadians(headPointCoordinates.lon)
+    )
 
-    val firstLatSinCos = FirstLat(sin(firstRadians.lat), cos(firstRadians.lat))
-    val lastLatSinCos  = LastLat(sin(lastRadians.lat), cos(lastRadians.lat))
-    val thetaSinCos    = Theta(sin(theta), cos(theta))
+    val lastPointCoordinatesInRadians = Coordinates(
+      toRadians(lastPointCoordinates.lat),
+      toRadians(lastPointCoordinates.lon)
+    )
 
-    (firstLatSinCos, lastLatSinCos, thetaSinCos)
+    val theta = lastPointCoordinatesInRadians.lon - headPointCoordinatesInRadians.lon
+
+    val headPointLatitudeSinCos = SinCos(
+      sin(headPointCoordinatesInRadians.lat),
+      cos(headPointCoordinatesInRadians.lat)
+    )
+
+    val lastPointLatitudeSinCos = SinCos(
+      sin(lastPointCoordinatesInRadians.lat),
+      cos(lastPointCoordinatesInRadians.lat)
+    )
+
+    val thetaSinCos = SinCos(
+      sin(theta),
+      cos(theta)
+    )
+
+    TrackTrigonometry(headPointLatitudeSinCos, lastPointLatitudeSinCos, thetaSinCos)
   }
 
-  protected def calculateDistance(firstLat: FirstLat, lastLat: LastLat, theta: Theta): Double = {
+  protected def calculateDistance(trackTrigonometry: TrackTrigonometry): Double = {
+    import trackTrigonometry._
+
     val ordinateCoordinates = sqrt(
-      pow(firstLat.cos * theta.sin, 2) +
-        pow((firstLat.cos * lastLat.sin) - (firstLat.sin * lastLat.cos * theta.cos), 2)
+      pow(headPointLatitude.cos * theta.sin, 2) +
+        pow(
+          (headPointLatitude.cos * lastPointLatitude.sin) -
+            (headPointLatitude.sin * lastPointLatitude.cos * theta.cos),
+          2
+        )
     )
-    val abscissaCoordinates = firstLat.sin * lastLat.sin + firstLat.cos * lastLat.cos * theta.cos
+    val abscissaCoordinates = {
+      (headPointLatitude.sin * lastPointLatitude.sin) +
+        (headPointLatitude.cos * lastPointLatitude.cos * theta.cos)
+    }
 
     val polarCoordinates = atan2(ordinateCoordinates, abscissaCoordinates)
 
@@ -44,41 +75,60 @@ private[metrics] trait MetricsCalculation {
 
   protected def calculateSpeed(distance: Double, duration: Long): Double = distance / duration
 
-  protected def calculateDirection(firstLat: FirstLat, lastLat: LastLat, theta: Theta): Direction = {
+  protected def calculateDirection(
+    headTrackPoint: TrackPoint,
+    lastTrackPoint: TrackPoint,
+    trackTrigonometry: => TrackTrigonometry
+  ): Direction = {
+    val headAndLastPointsCoordinatesAreSame = {
+      headTrackPoint.geoposition.coordinates ==
+        lastTrackPoint.geoposition.coordinates
+    }
 
-    val initialAzimuth = calculateInitialAzimuth(firstLat, lastLat, theta)
+    if (headAndLastPointsCoordinatesAreSame) {
+      lastTrackPoint.geoposition.direction
+    } else {
+      val azimuth = calculateAzimuth(trackTrigonometry)
 
-    initialAzimuth match {
-      case a if northDegrees(a) => Direction.N
-      case a if nneDegrees(a)   => Direction.NNE
-      case a if neDegrees(a)    => Direction.NE
-      case a if eneDegrees(a)   => Direction.ENE
-      case a if eastDegrees(a)  => Direction.E
-      case a if eseDegrees(a)   => Direction.ESE
-      case a if seDegrees(a)    => Direction.SE
-      case a if sseDegrees(a)   => Direction.SSE
-      case a if southDegrees(a) => Direction.S
-      case a if sswDegrees(a)   => Direction.SSW
-      case a if swDegrees(a)    => Direction.SW
-      case a if wswDegrees(a)   => Direction.WSW
-      case a if westDegrees(a)  => Direction.W
-      case a if wnwDegrees(a)   => Direction.WNW
-      case a if nwDegrees(a)    => Direction.NW
-      case a if nnwDegrees(a)   => Direction.NNW
-      case _                    => Direction.Zero
+      azimuth match {
+        case a if northDegrees(a) => Direction.N
+        case a if nneDegrees(a)   => Direction.NNE
+        case a if neDegrees(a)    => Direction.NE
+        case a if eneDegrees(a)   => Direction.ENE
+        case a if eastDegrees(a)  => Direction.E
+        case a if eseDegrees(a)   => Direction.ESE
+        case a if seDegrees(a)    => Direction.SE
+        case a if sseDegrees(a)   => Direction.SSE
+        case a if southDegrees(a) => Direction.S
+        case a if sswDegrees(a)   => Direction.SSW
+        case a if swDegrees(a)    => Direction.SW
+        case a if wswDegrees(a)   => Direction.WSW
+        case a if westDegrees(a)  => Direction.W
+        case a if wnwDegrees(a)   => Direction.WNW
+        case a if nwDegrees(a)    => Direction.NW
+        case a if nnwDegrees(a)   => Direction.NNW
+        case _                    => Direction.Zero
+      }
     }
   }
 
-  private def calculateInitialAzimuth(firstLat: FirstLat, lastLat: LastLat, theta: Theta): Double = {
+  private def calculateAzimuth(trackTrigonometry: TrackTrigonometry): Double = {
+    import trackTrigonometry._
+
     val degrees = {
-      val x = theta.sin * lastLat.cos
-      val y = firstLat.cos * lastLat.sin - firstLat.sin * lastLat.cos * theta.cos
-      val z = toDegrees(atan(-x / y))
+      val x = theta.sin * headPointLatitude.cos
+
+      val y = {
+        (lastPointLatitude.cos * headPointLatitude.sin) -
+          (lastPointLatitude.sin * headPointLatitude.cos * theta.cos)
+      }
+
+      val z = toDegrees(atan2(x, y))
 
       if (x < 0) z + Degrees180 else z
     }
 
-    val radian   = toRadians((degrees + Degrees180) % Degrees360 - Degrees180)
+    val radian   = -toRadians((degrees + Degrees180) % Degrees360 - Degrees180)
     val angleRad = radian - ((2 * Pi) * floor(radian / (2 * Pi)))
 
     angleRad * Degrees180 / Pi
@@ -87,10 +137,8 @@ private[metrics] trait MetricsCalculation {
 
 private[metrics] object MetricsCalculation {
 
-  sealed trait SinCos { val sin, cos: Double }
-  case class FirstLat(sin: Double, cos: Double) extends SinCos
-  case class LastLat(sin: Double, cos: Double)  extends SinCos
-  case class Theta(sin: Double, cos: Double)    extends SinCos
+  case class SinCos(sin: Double, cos: Double)
+  case class TrackTrigonometry(headPointLatitude: SinCos, lastPointLatitude: SinCos, theta: SinCos)
 
   private val EarthRadius     = 6372795
   private val DegreesZero     = 0d
@@ -103,23 +151,23 @@ private[metrics] object MetricsCalculation {
     (Degrees360 - DegreesStep) <= azimuth && azimuth <= Degrees360 ||
       DegreesZero <= azimuth && azimuth < DegreesHalfStep
   }
-  private def nneDegrees: Double => Boolean   = worldPart(0)
-  private def neDegrees: Double => Boolean    = worldPart(1)
-  private def eneDegrees: Double => Boolean   = worldPart(2)
-  private def eastDegrees: Double => Boolean  = worldPart(3)
-  private def eseDegrees: Double => Boolean   = worldPart(4)
-  private def seDegrees: Double => Boolean    = worldPart(5)
-  private def sseDegrees: Double => Boolean   = worldPart(6)
-  private def southDegrees: Double => Boolean = worldPart(7)
-  private def sswDegrees: Double => Boolean   = worldPart(8)
-  private def swDegrees: Double => Boolean    = worldPart(9)
-  private def wswDegrees: Double => Boolean   = worldPart(10)
-  private def westDegrees: Double => Boolean  = worldPart(11)
-  private def wnwDegrees: Double => Boolean   = worldPart(12)
-  private def nwDegrees: Double => Boolean    = worldPart(13)
-  private def nnwDegrees: Double => Boolean   = worldPart(14)
+  private def nneDegrees: Double => Boolean   = prepareMatcherBySegmentNum(0)
+  private def neDegrees: Double => Boolean    = prepareMatcherBySegmentNum(1)
+  private def eneDegrees: Double => Boolean   = prepareMatcherBySegmentNum(2)
+  private def eastDegrees: Double => Boolean  = prepareMatcherBySegmentNum(3)
+  private def eseDegrees: Double => Boolean   = prepareMatcherBySegmentNum(4)
+  private def seDegrees: Double => Boolean    = prepareMatcherBySegmentNum(5)
+  private def sseDegrees: Double => Boolean   = prepareMatcherBySegmentNum(6)
+  private def southDegrees: Double => Boolean = prepareMatcherBySegmentNum(7)
+  private def sswDegrees: Double => Boolean   = prepareMatcherBySegmentNum(8)
+  private def swDegrees: Double => Boolean    = prepareMatcherBySegmentNum(9)
+  private def wswDegrees: Double => Boolean   = prepareMatcherBySegmentNum(10)
+  private def westDegrees: Double => Boolean  = prepareMatcherBySegmentNum(11)
+  private def wnwDegrees: Double => Boolean   = prepareMatcherBySegmentNum(12)
+  private def nwDegrees: Double => Boolean    = prepareMatcherBySegmentNum(13)
+  private def nnwDegrees: Double => Boolean   = prepareMatcherBySegmentNum(14)
 
-  private[this] def worldPart: Int => Double => Boolean =
+  private[this] def prepareMatcherBySegmentNum: Int => Double => Boolean =
     segmentNum =>
       azimuth => {
         DegreesHalfStep + DegreesStep * segmentNum <= azimuth &&

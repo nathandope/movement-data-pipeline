@@ -1,38 +1,23 @@
 package dope.nathan.movement.data.converter
 package logic.config
 
-import logic.Logging
-
 import cloudflow.streamlets.{DurationConfigParameter, StreamletContext}
-import org.apache.flink.streaming.api.windowing.time.{Time => NoDeSerTime}
-import org.apache.flink.api.common.time.Time
-
-import java.time.Duration
+import dope.nathan.movement.data.common.auxiliary.BaseLogging
+import org.apache.flink.api.common.time.{Time => SerializableTime}
+import org.apache.flink.streaming.api.windowing.time.{Time => NonSerializableTime}
 
 case class WindowConfig(
-  autoWatermarkIntervalParameter: Option[Long],
-  trackWindowDuration: NoDeSerTime,
-  maxTimeDelayOfTrackPoints: Time,
-  trackWindowReleaseTimeout: NoDeSerTime) {
+  trackWindowDuration: NonSerializableTime,
+  maxTimeDelayOfTrackPoints: SerializableTime,
+  trackWindowReleaseTimeout: NonSerializableTime) {
   override def toString: String =
     s"WindowConfig(" +
-      s"autoWatermarkIntervalParameter= $autoWatermarkIntervalParameter ms, " +
       s"trackWindowDuration= ${trackWindowDuration.toMilliseconds} ms, " +
       s"maxTimeDelayOfTrackPoints= ${maxTimeDelayOfTrackPoints.toMilliseconds} ms, " +
       s"trackWindowReleaseTimeout= ${trackWindowReleaseTimeout.toMilliseconds} ms)"
 }
 
-case object WindowConfig extends Logging {
-
-  val autoWatermarkIntervalParameter: DurationConfigParameter = DurationConfigParameter(
-    key = "auto-watermark-interval",
-    description =
-      """
-        |The periodic assignment of watermarks means that we instruct the system to issue watermarks and increase the event time with fixed machine time intervals.
-        |See more info about Flink Auto Watermark Interval at https://ci.apache.org/projects/flink/flink-docs-release-1.10/dev/event_timestamps_watermarks.html#with-periodic-watermarks
-        |See more info about Hocon Duration Format at https://github.com/lightbend/config/blob/master/HOCON.md#duration-format
-        |""".stripMargin
-  )
+case object WindowConfig extends BaseLogging {
 
   val trackWindowDurationParameter: DurationConfigParameter = DurationConfigParameter(
     key = "track-window-duration",
@@ -67,45 +52,15 @@ case object WindowConfig extends Logging {
   )
 
   val allParameters = Vector(
-    autoWatermarkIntervalParameter,
     trackWindowDurationParameter,
     maxTimeDelayOfTrackPointsParameter,
     trackWindowReleaseTimeoutParameter
   )
 
-  def apply(implicit ctx: StreamletContext): WindowConfig = {
-    log.info(s"Start initialization config...")
-
-    val maybeTrackWindowDurationParameter = tryTakeParameter(autoWatermarkIntervalParameter)
-
-    val config = new WindowConfig(
-      maybeTrackWindowDurationParameter.map(_.toMillis),
-      NoDeSerTime.milliseconds(trackWindowDurationParameter.value.toMillis),
-      Time.milliseconds(maxTimeDelayOfTrackPointsParameter.value.toMillis),
-      NoDeSerTime.milliseconds(trackWindowReleaseTimeoutParameter.value.toMillis)
-    )
-
-    log.info(
-      s"""End initialization config:
-         |${config.toString}
-         |""".stripMargin
-    )
-
-    config
-  }
-
-  private def tryTakeParameter(
-    autoWatermarkIntervalParameter: DurationConfigParameter
-  )(implicit ctx: StreamletContext
-  ): Option[Duration] = {
-    Option(autoWatermarkIntervalParameter.value).orElse {
-      val warnMsg =
-        s"The parameter ${autoWatermarkIntervalParameter.key} is empty. " +
-          s"The default value provided by Flink will be used."
-      log.warn(warnMsg)
-
-      None
-    }
-  }
+  def apply(implicit ctx: StreamletContext): WindowConfig = new WindowConfig(
+    NonSerializableTime.milliseconds(trackWindowDurationParameter.value.toMillis),
+    SerializableTime.milliseconds(maxTimeDelayOfTrackPointsParameter.value.toMillis),
+    NonSerializableTime.milliseconds(trackWindowReleaseTimeoutParameter.value.toMillis)
+  )
 
 }
