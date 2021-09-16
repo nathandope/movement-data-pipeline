@@ -1,0 +1,17 @@
+{
+  "sensor": {
+    "id": "ID-1",
+    "carrier": "Nathan",
+    "metrics": {
+      "timestamp": 1630701100,
+      "geoposition": {
+        "coordinates": {
+          "lat": 64.155146,
+          "lon": 115.917658
+        },
+        "direction": "N"
+      }
+    }
+  },
+  "eventTime": 1630711100
+}
