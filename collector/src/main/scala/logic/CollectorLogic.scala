@@ -3,28 +3,29 @@ package logic
 
 import logic.SparkEncoderEnrichment._
 
-import cloudflow.spark.{SparkStreamletContext, SparkStreamletLogic, StreamletQueryExecution}
-import cloudflow.streamlets.avro.AvroInlet
-import dope.nathan.movement.data.common.auxiliary.{BaseLogging, ExceptionManagement, ProcessLogging}
+import cloudflow.spark.{ SparkStreamletContext, SparkStreamletLogic, StreamletQueryExecution }
+import dope.nathan.movement.data.common.auxiliary.{ BaseLogging, ExceptionManagement, ProcessLogging }
 import dope.nathan.movement.data.model.event.TrackMade
 import org.apache.spark.sql.Dataset
-import org.apache.spark.sql.streaming.{OutputMode, StreamingQuery}
+import org.apache.spark.sql.streaming.{ OutputMode, StreamingQuery }
 
-import scala.util.control.Exception.{catching, nonFatalCatcher}
-
-case class CollectorLogic(trackMadeIn: AvroInlet[TrackMade])(implicit override val context: SparkStreamletContext)
+class CollectorLogic(implicit override val context: SparkStreamletContext)
     extends SparkStreamletLogic
-    with BaseLogging
-    with ProcessLogging[TrackMade]
+    with CollectorOpenings
     with ExceptionManagement {
 
-  override def buildStreamingQueries: StreamletQueryExecution =
-    catching(nonFatalCatcher).either {
+  override def buildStreamingQueries: StreamletQueryExecution = {
+    val exceptionOrQueryExec = safely {
       val trackMadeSet = readStream(trackMadeIn)
-      makeStreamingQuery(trackMadeSet).toQueryExecution
+      CollectorLogic.makeStreamingQuery(trackMadeSet).toQueryExecution
+    }(Some("Could not build the streaming queries"))
 
-    }.fold(castAndThrow("Could not build the queries"), identity)
+    exceptionOrQueryExec.fold(throw _, identity)
+  }
 
+}
+
+object CollectorLogic extends BaseLogging with ProcessLogging[TrackMade] {
   private def makeStreamingQuery(trackMadeSet: Dataset[TrackMade]): StreamingQuery = {
     val track = trackMadeSet
       .map(log("Start", _, logger.debug))
@@ -36,5 +37,4 @@ case class CollectorLogic(trackMadeIn: AvroInlet[TrackMade])(implicit override v
 
     trackWriter.start()
   }
-
 }
