@@ -12,12 +12,10 @@ trait CollectorOpenings {
     AvroInlet("track-made-in")
 }
 
-trait CollectorShape extends SparkStreamlet with CollectorOpenings {
+trait CollectorBase extends SparkStreamlet with CollectorOpenings {
   override def shape(): StreamletShape =
     StreamletShape.withInlets(trackMadeIn)
-}
 
-trait CollectorBase extends CollectorShape {
   override protected def createLogic(): SparkStreamletLogic =
     new CollectorLogic
 }

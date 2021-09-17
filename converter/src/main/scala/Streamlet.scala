@@ -16,12 +16,12 @@ trait ConverterOpenings {
     AvroOutlet("track-made-out")
 }
 
-trait ConverterShape extends FlinkStreamlet with ConverterOpenings {
+trait ConverterBase extends FlinkStreamlet with ConverterOpenings {
   override def shape(): StreamletShape =
-    StreamletShape(sensorDataGotIn).withOutlets(trackMadeOut)
-}
+    StreamletShape
+      .withInlets(sensorDataGotIn)
+      .withOutlets(trackMadeOut)
 
-trait ConverterBase extends ConverterShape {
   override def configParameters: Vector[ConfigParameter] =
     FlinkConfig.allParameters
 
