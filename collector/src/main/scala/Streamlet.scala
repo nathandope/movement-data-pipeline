@@ -7,17 +7,17 @@ import cloudflow.streamlets.StreamletShape
 import cloudflow.streamlets.avro.AvroInlet
 import dope.nathan.movement.data.model.event.TrackMade
 
-trait CollectorShape extends SparkStreamlet {
+trait CollectorOpenings {
   val trackMadeIn: AvroInlet[TrackMade] =
     AvroInlet("track-made-in")
-
-  override def shape(): StreamletShape =
-    StreamletShape.withInlets(trackMadeIn)
 }
 
-trait CollectorBase extends CollectorShape {
+trait CollectorBase extends SparkStreamlet with CollectorOpenings {
+  override def shape(): StreamletShape =
+    StreamletShape.withInlets(trackMadeIn)
+
   override protected def createLogic(): SparkStreamletLogic =
-    CollectorLogic.apply(trackMadeIn)
+    new CollectorLogic
 }
 
 object Collector extends CollectorBase {
