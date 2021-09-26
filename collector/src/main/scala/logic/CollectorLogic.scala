@@ -14,14 +14,16 @@ class CollectorLogic(implicit override val context: SparkStreamletContext)
     with CollectorOpenings
     with ExceptionManagement {
 
-  override def buildStreamingQueries: StreamletQueryExecution = {
-    val exceptionOrQueryExec = safely {
-      val trackMadeSet = readStream(trackMadeIn)
-      CollectorLogic.makeStreamingQuery(trackMadeSet).toQueryExecution
-    }(Some("Could not build the streaming queries"))
+  import CollectorLogic._
 
-    exceptionOrQueryExec.fold(throw _, identity)
-  }
+  override def buildStreamingQueries: StreamletQueryExecution =
+    safelyBuildStreamingQueries.fold(throw _, identity)
+
+  private def safelyBuildStreamingQueries =
+    safely {
+      val trackMadeSet = readStream(trackMadeIn)
+      makeStreamingQuery(trackMadeSet).toQueryExecution
+    }(Some("Could not build the streaming queries"))
 
 }
 
