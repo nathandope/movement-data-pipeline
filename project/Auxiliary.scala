@@ -34,16 +34,19 @@ object CustomSettings {
 }
 
 object Dependency {
-  val JodaTime  = "joda-time"         % "joda-time"       % "2.10.10"
-  val AkkaSlf4j = "com.typesafe.akka" %% "akka-slf4j"     % "2.6.13"
-  val Logback   = "ch.qos.logback"    % "logback-classic" % "1.2.3"
-  val ScalaTest = "org.scalatest"     %% "scalatest"      % "3.2.0" % Test
+  val FlinkVer = "1.10.0"
+
+  val JodaTime  = "joda-time"      % "joda-time"       % "2.10.10"
+  val Logback   = "ch.qos.logback" % "logback-classic" % "1.2.3"
+  val ScalaTest = "org.scalatest"  %% "scalatest"      % "3.2.0" % Test
 
   val commons = Seq(JodaTime, Logback, ScalaTest)
 
-  val FlinkTestUtils = "org.apache.flink" %% "flink-test-utils"     % "1.10.0" % Test
-  val FlinkRuntime   = "org.apache.flink" %% "flink-runtime"        % "1.10.0" % Test classifier "tests"
-  val FlinkStreaming = "org.apache.flink" %% "flink-streaming-java" % "1.10.0" % Test classifier "tests"
+  val AkkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.6.13"
+
+  val FlinkTestUtils = "org.apache.flink" %% "flink-test-utils"     % FlinkVer % Test
+  val FlinkRuntime   = "org.apache.flink" %% "flink-runtime"        % FlinkVer % Test classifier "tests"
+  val FlinkStreaming = "org.apache.flink" %% "flink-streaming-java" % FlinkVer % Test classifier "tests"
 
   val flinkTestKit = Seq(FlinkTestUtils, FlinkRuntime, FlinkStreaming)
 }

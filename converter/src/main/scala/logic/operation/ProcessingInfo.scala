@@ -1,10 +1,13 @@
 package dope.nathan.movement.data.converter
 package logic.operation
 
+import logic.SensorKey
+
+import dope.nathan.movement.data.model.event.SensorDataGot
 import org.joda.time.DateTime
 
 case class ProcessingInfo(
-  sensorComplexKey: SensorComplexKey,
+  sensorKey: SensorKey,
   startWindow: Long,
   endWindow: Long,
   maxTimestampWindow: Long,
@@ -16,7 +19,7 @@ case class ProcessingInfo(
       l => (l, new DateTime(l))
 
     s"""ProcessingInfo{
-       |sensorComplexKey= $sensorComplexKey,
+       |sensorKey= $sensorKey,
        |startWindow= ${prettyTime(startWindow)},
        |endWindow= ${prettyTime(endWindow)},
        |maxWindowTimestamp= ${prettyTime(maxTimestampWindow)},
@@ -29,16 +32,20 @@ case class ProcessingInfo(
 
 object ProcessingInfo {
   def apply(
-    key: SensorComplexKey,
+    sensorKey: SensorKey,
     context: SensorDataGotToTrackMade.Context,
-    timestamps: Iterable[Long]
-  ): ProcessingInfo = ProcessingInfo(
-    key: SensorComplexKey,
-    context.window.getStart,
-    context.window.getEnd,
-    context.window.maxTimestamp,
-    timestamps,
-    context.currentProcessingTime,
-    context.currentWatermark
-  )
+    elements: Iterable[SensorDataGot]
+  ): ProcessingInfo = {
+    val timestamps = elements.map(_.sensor.metrics.timestamp)
+
+    ProcessingInfo(
+      sensorKey: SensorKey,
+      context.window.getStart,
+      context.window.getEnd,
+      context.window.maxTimestamp,
+      timestamps,
+      context.currentProcessingTime,
+      context.currentWatermark
+    )
+  }
 }
