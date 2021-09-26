@@ -1,7 +1,7 @@
 package dope.nathan.movement.data.converter
 package logic
 import logic.config.{ FlinkConfig, FlinkSetup, WindowConfig }
-import logic.operation.{ SensorDataGotToTrackMade, SensorKeySelector, SensorTimestampExtractor }
+import logic.operation.{ SensorDataGotToTrackMade, SensorTimestampExtractor }
 
 import cloudflow.flink.{ FlinkStreamletContext, FlinkStreamletLogic }
 import dope.nathan.movement.data.common.auxiliary.ExceptionManagement
@@ -51,7 +51,7 @@ object ConverterLogic extends Serializable {
 
     sensorDataGotStream
       .assignTimestampsAndWatermarks(timestampExtractor)
-      .keyBy(SensorKeySelector)
+      .keyBy(event => (event.sensor.id, event.sensor.carrier))
       .timeWindow(config.trackWindowDuration)
       .allowedLateness(config.trackWindowReleaseTimeout)
       .process(SensorDataGotToTrackMade)

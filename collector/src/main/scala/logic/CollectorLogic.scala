@@ -25,10 +25,10 @@ class CollectorLogic(implicit override val context: SparkStreamletContext)
 
 }
 
-object CollectorLogic extends BaseLogging with ProcessLogging[TrackMade] {
+object CollectorLogic extends BaseLogging with ProcessLogging {
   private def makeStreamingQuery(trackMadeSet: Dataset[TrackMade]): StreamingQuery = {
     val track = trackMadeSet
-      .map(log("Start", _, logger.debug))
+      .map(log("Start", logger.debug))
       .map(_.track)
 
     val trackWriter = track.writeStream
