@@ -4,15 +4,15 @@ package logic.operation
 import logic.SensorKey
 import logic.enrichment.event.TrackMadeEnrichment
 
-import dope.nathan.movement.data.common.auxiliary.{ BaseLogging, ProcessLogging }
-import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
+import dope.nathan.movement.data.common.auxiliary.{Logging, ProcessLogging}
+import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.util.Collector
 
 case object SensorDataGotToTrackMade
     extends ProcessWindowFunction[SensorDataGot, TrackMade, SensorKey, TimeWindow]
-    with BaseLogging
+    with Logging
     with ProcessLogging {
 
   import TrackMadeEnrichment.TrackMadeSyntax

@@ -4,7 +4,7 @@ package logic.enrichment.track
 import logic.SensorKey
 
 import dope.nathan.movement.data.model.Track
-import dope.nathan.movement.data.model.track.{ Metrics, TrackPoint }
+import dope.nathan.movement.data.model.track.{Metrics, TrackPoint}
 import org.joda.time.Interval
 
 object TrackEnrichment {
