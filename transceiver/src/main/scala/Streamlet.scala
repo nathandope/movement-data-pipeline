@@ -2,7 +2,7 @@ package dope.nathan.movement.data.transceiver
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import cloudflow.akkastream.util.scaladsl.HttpServerLogic
-import cloudflow.akkastream.{ AkkaServerStreamlet, AkkaStreamletLogic }
+import cloudflow.akkastream.{AkkaServerStreamlet, AkkaStreamletLogic}
 import cloudflow.streamlets.StreamletShape
 import cloudflow.streamlets.avro.AvroOutlet
 import dope.nathan.movement.data.model.event.SensorDataGot

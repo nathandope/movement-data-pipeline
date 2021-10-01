@@ -2,7 +2,7 @@ package dope.nathan.movement.data.converter
 package logic.config
 
 import cloudflow.streamlets.{ConfigParameter, StreamletContext}
-import dope.nathan.movement.data.common.auxiliary.BaseLogging
+import dope.nathan.movement.data.common.auxiliary.Logging
 
 case class FlinkConfig(environmentConfig: EnvironmentConfig, windowConfig: WindowConfig) {
   override def toString: String =
@@ -12,7 +12,7 @@ case class FlinkConfig(environmentConfig: EnvironmentConfig, windowConfig: Windo
        |}""".stripMargin
 }
 
-case object FlinkConfig extends BaseLogging {
+case object FlinkConfig extends Logging {
   def apply(implicit ctx: StreamletContext): FlinkConfig = {
     logger.info(s"Start initialization config...")
 

@@ -1,10 +1,15 @@
 package dope.nathan.movement.data.common
 package auxiliary
 
-import org.slf4j.{ Logger, LoggerFactory }
+import org.slf4j.{Logger, LoggerFactory}
 
-trait BaseLogging {
-  lazy val logger: Logger = LoggerFactory.getLogger(getClass)
+trait LoggingBase {
+  protected def logger: Logger
+}
+
+trait Logging extends LoggingBase {
+  protected lazy val logger: Logger =
+    LoggerFactory.getLogger(getClass)
 }
 
 trait ProcessLogging {

@@ -2,10 +2,10 @@ package dope.nathan.movement.data.converter
 package logic.enrichment.event
 
 import logic.SensorKey
-import logic.enrichment.track.{ TrackEnrichment, TrackPointEnrichment }
+import logic.enrichment.track.{TrackEnrichment, TrackPointEnrichment}
 
 import dope.nathan.movement.data.model.Track
-import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
+import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
 import dope.nathan.movement.data.model.track.TrackPoint
 import org.joda.time.Instant
 

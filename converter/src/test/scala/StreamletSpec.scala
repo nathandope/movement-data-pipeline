@@ -2,7 +2,7 @@ package dope.nathan.movement.data.converter
 
 import cloudflow.flink.testkit.{FlinkSource, FlinkTestkit, TestFlinkStreamletContext}
 import com.typesafe.config.{Config, ConfigFactory}
-import dope.nathan.movement.data.common.auxiliary.BaseLogging
+import dope.nathan.movement.data.common.auxiliary.Logging
 import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
@@ -12,7 +12,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.collection.JavaConverters._
 
-class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with BeforeAndAfter with BaseLogging {
+class StreamletSpec extends FlinkTestkit with AnyWordSpecLike with Matchers with BeforeAndAfter with Logging {
 
   private val env      = StreamExecutionEnvironment.getExecutionEnvironment
   private val testData = new TestData

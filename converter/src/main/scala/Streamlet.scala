@@ -3,10 +3,10 @@ package dope.nathan.movement.data.converter
 import logic.ConverterLogic
 import logic.config.FlinkConfig
 
-import cloudflow.flink.{ FlinkStreamlet, FlinkStreamletLogic }
-import cloudflow.streamlets.avro.{ AvroInlet, AvroOutlet }
-import cloudflow.streamlets.{ ConfigParameter, StreamletShape }
-import dope.nathan.movement.data.model.event.{ SensorDataGot, TrackMade }
+import cloudflow.flink.{FlinkStreamlet, FlinkStreamletLogic}
+import cloudflow.streamlets.avro.{AvroInlet, AvroOutlet}
+import cloudflow.streamlets.{ConfigParameter, StreamletShape}
+import dope.nathan.movement.data.model.event.{SensorDataGot, TrackMade}
 
 trait ConverterOpenings {
   @transient val sensorDataGotIn: AvroInlet[SensorDataGot] =

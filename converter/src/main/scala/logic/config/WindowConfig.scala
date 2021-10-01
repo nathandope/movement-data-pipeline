@@ -2,7 +2,7 @@ package dope.nathan.movement.data.converter
 package logic.config
 
 import cloudflow.streamlets.{DurationConfigParameter, StreamletContext}
-import dope.nathan.movement.data.common.auxiliary.BaseLogging
+import dope.nathan.movement.data.common.auxiliary.Logging
 import org.apache.flink.api.common.time.{Time => SerializableTime}
 import org.apache.flink.streaming.api.windowing.time.{Time => NonSerializableTime}
 
@@ -17,7 +17,7 @@ case class WindowConfig(
       s"trackWindowReleaseTimeout= ${trackWindowReleaseTimeout.toMilliseconds} ms)"
 }
 
-case object WindowConfig extends BaseLogging {
+case object WindowConfig extends Logging {
 
   val trackWindowDurationParameter: DurationConfigParameter = DurationConfigParameter(
     key = "track-window-duration",
